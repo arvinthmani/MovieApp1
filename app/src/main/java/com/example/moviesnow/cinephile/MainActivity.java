@@ -32,15 +32,21 @@ import com.example.moviesnow.fragments.HighestRatedListFragment;
 import com.example.moviesnow.fragments.MovieDetailActivityFragment;
 import com.example.moviesnow.fragments.PopularListFragment;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 
 public class MainActivity extends AppCompatActivity implements MovieTitleListAdapter.OnAdapterItemSelectedListener {
 
     private DrawerLayout mDrawerLayout;
     private SearchView search;
     private Toolbar toolbar;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        mFirebaseAnalytics.logEvent("MainActivity",savedInstanceState);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 

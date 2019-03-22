@@ -18,6 +18,8 @@ android {
     }
 }
 
+apply plugin: 'com.google.gms.google-services'
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:28.0.0'
@@ -31,5 +33,8 @@ dependencies {
     implementation 'com.android.support:palette-v7:28.0.0'
     implementation 'com.lapism:searchview:27.1.1.0.0'
     implementation 'com.google.android.gms:play-services-ads:17.2.0'
+    implementation 'com.google.firebase:firebase-core:16.0.8'
 
 }
+
+

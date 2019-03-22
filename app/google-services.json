@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "641359146418",
+    "firebase_url": "https://moviesnow-dbde5.firebaseio.com",
+    "project_id": "moviesnow-dbde5",
+    "storage_bucket": "moviesnow-dbde5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:641359146418:android:f4c212599edcd20d",
+        "android_client_info": {
+          "package_name": "com.example.moviesnow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "641359146418-76ghbbp65o892m3en9f97h9t1dom8koj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.moviesnow",
+            "certificate_hash": "3f94856bdc6930eb3d83758554f971dc45245452"
+          }
+        },
+        {
+          "client_id": "641359146418-o4nv5grgb7d4rmaf37p8ien7b1nrtnu0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8DoB0d3TMtyy8bfbgBgZPN1asv8S-rn0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "641359146418-o4nv5grgb7d4rmaf37p8ien7b1nrtnu0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
