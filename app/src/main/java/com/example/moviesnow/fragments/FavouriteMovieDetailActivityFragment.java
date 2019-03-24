@@ -134,7 +134,7 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
      * @param id ID of Movie
      */
 
-    private void getMovieDataFromID(final String id) {
+    public void getMovieDataFromID(final String id) {
         movie = ContentProviderHelperMethods.getMovieFromDatabase(getActivity(), id);
         mBackdrop.setImageUrl(movie.getBackdrop(), AppController.getInstance().getImageLoader());
         mCollapsingToolbarLayout.setTitle(movie.getTitle());

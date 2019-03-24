@@ -55,7 +55,7 @@ public class FavouriteListFragment extends Fragment {
         return mRecyclerView;
     }
 
-    private void getMovieList() {
+    public void getMovieList() {
 
         ArrayList<Movie> list = new ArrayList<>(ContentProviderHelperMethods
                 .getMovieListFromDatabase(getActivity()));

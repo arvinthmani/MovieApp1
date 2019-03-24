@@ -2,12 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.moviesnow">
-    
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name="com.example.moviesnow.utils.AppController"
+        android:name=".utils.AppController"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -15,6 +15,19 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <receiver android:name=".widget.MoviesNowWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/movies_now_widget_info" />
+        </receiver>
+
+        <service android:name=".widget.MovieListService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"></service>
+
         <activity
             android:name=".cinephile.MainActivity"
             android:label="@string/app_name">
@@ -24,19 +37,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
         <activity
-        android:name=".cinephile.FavouriteMovieDetailActivity"
-        android:label="@string/title_activity_movie_detail" />
-        
+            android:name=".cinephile.FavouriteMovieDetailActivity"
+            android:label="@string/title_activity_movie_detail" />
         <activity
-        android:name=".cinephile.MovieDetailActivity"
-        android:label="@string/title_activity_movie_detail" />
-        
+            android:name=".cinephile.MovieDetailActivity"
+            android:label="@string/title_activity_movie_detail" />
+
         <provider
-        android:name="com.example.moviesnow.utils.MoviesContentProvider"
-        android:authorities="com.example.moviesnow.cinephile.provider"
-        android:exported="true" />
+            android:name=".utils.MoviesContentProvider"
+            android:authorities="com.example.moviesnow.cinephile.provider"
+            android:exported="true" />
 
         <uses-library
             android:name="org.apache.http.legacy"
@@ -44,8 +55,7 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-2376938549117340~8076562031"/>
-
+            android:value="ca-app-pub-2376938549117340~8076562031" />
     </application>
 
 </manifest>

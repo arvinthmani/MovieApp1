@@ -21,7 +21,7 @@ import com.example.moviesnow.utils.Typefaces;
 
 public class FavouriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private ArrayList<Movie> mMovieList = new ArrayList<>();
+    private ArrayList<Movie> mMovieList = new ArrayList<Movie>();
     private Activity mAct;
     private LayoutInflater mInflater;
 
