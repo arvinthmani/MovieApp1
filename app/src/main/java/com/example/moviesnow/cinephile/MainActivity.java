@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements MovieTitleListAda
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        search = (SearchView) findViewById(R.id.search_box);
+//        search = (SearchView) findViewById(R.id.search_box);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

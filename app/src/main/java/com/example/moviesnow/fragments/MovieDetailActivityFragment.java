@@ -157,6 +157,8 @@ public class MovieDetailActivityFragment extends Fragment {
             @Override
             public void onResponse(JSONObject response) {
                 try {
+//                    Log.d("Movie","movie " + movie.getTitle());
+                    Log.d("Movie","movie id" + id);
                     movie.setId(Integer.valueOf(id));
                     movie.setTitle(response.getString("title"));
                     movie.setRating(String.valueOf(response.getDouble("vote_average")));
