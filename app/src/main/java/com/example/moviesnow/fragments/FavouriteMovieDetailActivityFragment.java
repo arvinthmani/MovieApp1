@@ -1,11 +1,14 @@
 package com.example.moviesnow.fragments;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,6 +18,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +35,9 @@ import com.example.moviesnow.utils.ContentProviderHelperMethods;
 import com.example.moviesnow.utils.DatabaseHelper;
 import com.example.moviesnow.utils.MoviesContentProvider;
 import com.example.moviesnow.utils.PaletteNetworkImageView;
+import com.example.moviesnow.widget.MovieListService;
+import com.example.moviesnow.widget.MoviesListDataProvider;
+import com.example.moviesnow.widget.MoviesNowWidget;
 
 
 /**
@@ -189,7 +196,21 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
                             .show();
 
                     fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like));
+                    //Intent rIntent = new Intent(getContext(), MovieListService.class);
+                    //rIntent.setData(Uri.parse(values.toString()));
+
+
                 }
+                AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getActivity());
+
+                int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
+                        new ComponentName(getActivity(), MoviesNowWidget.class));
+                for (int i = 0; i< appWidgetIds.length; i++) {
+                    Log.d("Movies","id = " + appWidgetIds[i]);
+                }
+                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds[0], R.id.widget_list);
+//                MoviesNowWidget.updateAppWidget(getContext(), appWidgetManager, appWidgetIds[0]);
+
             }
         });
 

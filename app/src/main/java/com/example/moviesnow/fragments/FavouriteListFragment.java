@@ -1,5 +1,8 @@
 package com.example.moviesnow.fragments;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -11,13 +14,20 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RemoteViews;
 
 import java.util.ArrayList;
 
+import com.android.volley.toolbox.NetworkImageView;
 import com.example.moviesnow.adapters.FavouriteListAdapter;
 import com.example.moviesnow.R;
 import com.example.moviesnow.models.Movie;
+import com.example.moviesnow.utils.AppController;
 import com.example.moviesnow.utils.ContentProviderHelperMethods;
+import com.example.moviesnow.utils.PaletteNetworkImageView;
+import com.example.moviesnow.widget.MovieListService;
+import com.example.moviesnow.widget.MoviesListDataProvider;
+import com.example.moviesnow.widget.MoviesNowWidget;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -60,9 +70,12 @@ public class FavouriteListFragment extends Fragment {
         ArrayList<Movie> list = new ArrayList<>(ContentProviderHelperMethods
                 .getMovieListFromDatabase(getActivity()));
         mMovieList.clear();
+
         for (Movie movie : list) {
             mMovieList.add(movie);
+
         }
+
     }
 
     @Override

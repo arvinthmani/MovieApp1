@@ -3,11 +3,6 @@ package com.example.moviesnow.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by Kushal on 01/08/15.
- * Class for Movie
- */
-
 
 public class Movie implements Parcelable {
 

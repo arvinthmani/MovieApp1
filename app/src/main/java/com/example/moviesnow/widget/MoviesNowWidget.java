@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.example.moviesnow.R;
@@ -16,22 +17,22 @@ import com.example.moviesnow.R;
  */
 public class MoviesNowWidget extends AppWidgetProvider {
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
+    public static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.movies_now_widget);
-
         // Set up the collection
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             setRemoteAdapter(context, views);
         } else {
             setRemoteAdapterV11(context, views);
         }
-
+        Log.d("WIDGET", "Widget Id is " + appWidgetId);
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
+
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
