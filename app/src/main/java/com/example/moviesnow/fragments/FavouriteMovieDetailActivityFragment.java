@@ -8,7 +8,7 @@ import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -18,7 +18,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,14 +34,9 @@ import com.example.moviesnow.utils.ContentProviderHelperMethods;
 import com.example.moviesnow.utils.DatabaseHelper;
 import com.example.moviesnow.utils.MoviesContentProvider;
 import com.example.moviesnow.utils.PaletteNetworkImageView;
-import com.example.moviesnow.widget.MovieListService;
-import com.example.moviesnow.widget.MoviesListDataProvider;
 import com.example.moviesnow.widget.MoviesNowWidget;
 
 
-/**
- * A placeholder fragment containing a simple view.
- */
 public class FavouriteMovieDetailActivityFragment extends Fragment {
 
     private String id;
@@ -117,9 +111,6 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
             }
         });
 
-//        mToolbar.inflateMenu(R.menu.menu_movie_detail);
-
-
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -135,11 +126,24 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
         return v;
     }
 
-    /**
-     * Method to Get Data From given ID
-     *
-     * @param id ID of Movie
-     */
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            id = savedInstanceState.getString("id");
+            trailerInfo = savedInstanceState.getStringArrayList("trailerInfo");
+            reviewInfo = savedInstanceState.getStringArrayList("reviewInfo");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("id", id);
+        outState.putStringArrayList("trailerInfo", trailerInfo);
+        outState.putStringArrayList("reviewInfo", reviewInfo);
+    }
 
     public void getMovieDataFromID(final String id) {
         movie = ContentProviderHelperMethods.getMovieFromDatabase(getActivity(), id);
@@ -196,21 +200,13 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
                             .show();
 
                     fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like));
-                    //Intent rIntent = new Intent(getContext(), MovieListService.class);
-                    //rIntent.setData(Uri.parse(values.toString()));
-
 
                 }
                 AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getActivity());
 
                 int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
                         new ComponentName(getActivity(), MoviesNowWidget.class));
-                for (int i = 0; i< appWidgetIds.length; i++) {
-                    Log.d("Movies","id = " + appWidgetIds[i]);
-                }
                 appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds[0], R.id.widget_list);
-//                MoviesNowWidget.updateAppWidget(getContext(), appWidgetManager, appWidgetIds[0]);
-
             }
         });
 

@@ -1,11 +1,7 @@
 package com.example.moviesnow.fragments;
 
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,27 +10,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RemoteViews;
 
 import java.util.ArrayList;
 
-import com.android.volley.toolbox.NetworkImageView;
 import com.example.moviesnow.adapters.FavouriteListAdapter;
 import com.example.moviesnow.R;
 import com.example.moviesnow.models.Movie;
-import com.example.moviesnow.utils.AppController;
 import com.example.moviesnow.utils.ContentProviderHelperMethods;
-import com.example.moviesnow.utils.PaletteNetworkImageView;
-import com.example.moviesnow.widget.MovieListService;
-import com.example.moviesnow.widget.MoviesListDataProvider;
-import com.example.moviesnow.widget.MoviesNowWidget;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 
-/**
- * Created by Kushal on 01/08/15.
- * Popular List Fragment
- */
 
 public class FavouriteListFragment extends Fragment {
 
@@ -79,6 +62,14 @@ public class FavouriteListFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            mMovieList = savedInstanceState.getParcelableArrayList("mMovieList");
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList("mMovieList", mMovieList);
@@ -97,6 +88,25 @@ public class FavouriteListFragment extends Fragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         recyclerView.setAdapter(mAdapter);
+    }
+
+    public  void searchMovieList(String searchString) {
+        ArrayList<Movie> searchMoveList = new ArrayList<>();
+        for (Movie movie : mMovieList) {
+            if((movie.getTitle().toLowerCase()).contains(searchString.toLowerCase())) {
+                searchMoveList.add(movie);
+
+            }
+        }
+        mAdapter = new FavouriteListAdapter(searchMoveList, getActivity());
+        mRecyclerView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    public void clearSearchList() {
+        mAdapter = new FavouriteListAdapter(mMovieList, getActivity());
+        mRecyclerView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
     }
 
 }

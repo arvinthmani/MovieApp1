@@ -58,10 +58,6 @@ public class FavouriteListAdapter extends RecyclerView.Adapter<RecyclerView.View
             case 2:
                 ((ViewHolderSmall) holder).getImageView().setImageUrl(mMovieList.get(position).getImage(), AppController.getInstance().getImageLoader());
                 ((ViewHolderSmall) holder).getTitleView().setText(mMovieList.get(position).getTitle());
-//                ((ViewHolderSmall) holder).getTitleView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
-
-//                ((ViewHolderSmall) holder).getToolbar().getMenu().clear();
-//                ((ViewHolderSmall) holder).getToolbar().inflateMenu(R.menu.card_toolbar_menu);
 
                 ((ViewHolderSmall) holder).getImageView().setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -77,9 +73,6 @@ public class FavouriteListAdapter extends RecyclerView.Adapter<RecyclerView.View
                 ((ViewHolderLarge) holder).getImageView().setImageUrl(mMovieList.get(position).getImage(), AppController.getInstance().getImageLoader());
                 ((ViewHolderLarge) holder).getTitleView().setText(mMovieList.get(position).getTitle());
                 ((ViewHolderLarge) holder).getOverviewView().setText(mMovieList.get(position).getOverview());
-//                ((ViewHolderLarge) holder).getTitleView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
-//                ((ViewHolderLarge) holder).getOverviewView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
-//                ((ViewHolderLarge) holder).getReadMoreView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
                 ((ViewHolderLarge) holder).getImageView().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -110,13 +103,11 @@ public class FavouriteListAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         private NetworkImageView imageView;
         private TextView titleView;
-//        private Toolbar toolbar;
 
         public ViewHolderSmall(View v) {
             super(v);
             imageView = (NetworkImageView) v.findViewById(R.id.image);
             titleView = (TextView) v.findViewById(R.id.title);
-//            toolbar = (Toolbar) v.findViewById(R.id.card_toolbar);
         }
 
         public NetworkImageView getImageView() {
@@ -127,9 +118,6 @@ public class FavouriteListAdapter extends RecyclerView.Adapter<RecyclerView.View
             return titleView;
         }
 
-//        public Toolbar getToolbar() {
-//            return toolbar;
-//        }
     }
 
     public static class ViewHolderLarge extends RecyclerView.ViewHolder {

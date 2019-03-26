@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.example.moviesnow.R;
@@ -28,7 +27,6 @@ public class MoviesNowWidget extends AppWidgetProvider {
         } else {
             setRemoteAdapterV11(context, views);
         }
-        Log.d("WIDGET", "Widget Id is " + appWidgetId);
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }

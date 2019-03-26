@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import com.example.moviesnow.models.Movie;
 import com.example.moviesnow.models.MovieDetails;
 
-/**
- * Created by kushal on 17/08/15.
- */
 public class ContentProviderHelperMethods {
 
     public static ArrayList<Movie> getMovieListFromDatabase(Activity mAct) {

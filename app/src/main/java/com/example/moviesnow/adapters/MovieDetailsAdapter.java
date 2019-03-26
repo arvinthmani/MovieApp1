@@ -22,8 +22,6 @@ import com.example.moviesnow.models.MovieDetails;
 import com.example.moviesnow.utils.AppController;
 import com.example.moviesnow.utils.PaletteNetworkImageView;
 import com.example.moviesnow.utils.TmdbUrls;
-import com.example.moviesnow.utils.Typefaces;
-
 
 public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -96,16 +94,6 @@ public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 ((ViewHolderDetails) holder).getOverviewView().setText(movie.getOverview());
                 ((ViewHolderDetails) holder).getVoteCountView().setText(movie.getVoteCount() + " votes");
 
-//                ((ViewHolderDetails) holder).getTitleView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
-//                ((ViewHolderDetails) holder).getTaglineView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
-//                ((ViewHolderDetails) holder).getDateStatusView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
-//                ((ViewHolderDetails) holder).getDurationView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
-//                ((ViewHolderDetails) holder).getRatingView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
-//                ((ViewHolderDetails) holder).getGenreView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
-//                ((ViewHolderDetails) holder).getPopularityView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
-//                ((ViewHolderDetails) holder).getLanguageView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
-//                ((ViewHolderDetails) holder).getOverviewView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
-
                 ((ViewHolderDetails) holder).getImageView().setResponseObserver(new PaletteNetworkImageView.ResponseObserver() {
                     @Override
                     public void onSuccess() {
@@ -131,10 +119,6 @@ public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 ((ViewHolderTrailer) holder).getTitleView().setText(data[1]);
                 ((ViewHolderTrailer) holder).getSiteView().setText(mAct.getString(R.string.site) + data[2]);
                 ((ViewHolderTrailer) holder).getQualityView().setText(mAct.getString(R.string.quality) + data[3] + "p");
-//                ((ViewHolderTrailer) holder).getTitleView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
-//                ((ViewHolderTrailer) holder).getSiteView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
-//                ((ViewHolderTrailer) holder).getQualityView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
-
 
                 ((ViewHolderTrailer) holder).getRippleLayout().setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -148,8 +132,6 @@ public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         .substring(reviewInfo.get(position - 1 - trailerInfo.size()).indexOf("-") + 1));
                 ((ViewHolderReview) holder).getReviewAuthorView().setText(reviewInfo.get(position - 1 - trailerInfo.size())
                         .substring(0, reviewInfo.get(position - 1 - trailerInfo.size()).indexOf("-")));
-//                ((ViewHolderReview) holder).getReviewAuthorView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
-//                ((ViewHolderReview) holder).getReviewView().setTypeface(Typefaces.get(mAct, "RobotoSlab-Regular.ttf"));
                 break;
         }
     }

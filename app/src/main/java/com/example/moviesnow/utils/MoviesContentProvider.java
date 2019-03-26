@@ -9,10 +9,6 @@ import android.net.Uri;
 
 import java.util.HashMap;
 
-/**
- * Created by kushal on 16/08/15.
- * Content Provider for movies
- */
 
 public class MoviesContentProvider extends ContentProvider {
 

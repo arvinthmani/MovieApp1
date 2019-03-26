@@ -11,10 +11,6 @@ import java.util.List;
 
 import com.example.moviesnow.models.MovieDetails;
 
-/**
- * Created by kushal on 02/08/15.
- * Database helper class
- */
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 

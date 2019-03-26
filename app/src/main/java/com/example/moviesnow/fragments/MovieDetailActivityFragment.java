@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,7 +18,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,10 +45,6 @@ import com.example.moviesnow.utils.PaletteNetworkImageView;
 import com.example.moviesnow.utils.TmdbUrls;
 import com.example.moviesnow.widget.MoviesNowWidget;
 
-
-/**
- * A placeholder fragment containing a simple view.
- */
 public class MovieDetailActivityFragment extends Fragment {
 
     private String id;
@@ -77,6 +73,7 @@ public class MovieDetailActivityFragment extends Fragment {
 
         id = getActivity().getIntent().getStringExtra("id");
         movie = new MovieDetails();
+
         getMovieDataFromID(id);
 
         mRecyclerView = (RecyclerView) v.findViewById(R.id.recycler_movie_details);
@@ -140,16 +137,27 @@ public class MovieDetailActivityFragment extends Fragment {
         return v;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            id = savedInstanceState.getString("id");
+            trailerInfo = savedInstanceState.getStringArrayList("trailerInfo");
+            reviewInfo = savedInstanceState.getStringArrayList("reviewInfo");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("id", id);
+        outState.putStringArrayList("trailerInfo", trailerInfo);
+        outState.putStringArrayList("reviewInfo", reviewInfo);
+    }
 
     public void updateContent(String id) {
         getMovieDataFromID(id);
     }
-
-    /**
-     * `Method to Get Data From given ID
-     *
-     * @param id ID of Movie
-     */
 
     private void getMovieDataFromID(final String id) {
         String url = TmdbUrls.MOVIE_BASE_URL + id + "?" + TmdbUrls.API_KEY;
@@ -157,8 +165,6 @@ public class MovieDetailActivityFragment extends Fragment {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-//                    Log.d("Movie","movie " + movie.getTitle());
-                    Log.d("Movie","movie id" + id);
                     movie.setId(Integer.valueOf(id));
                     movie.setTitle(response.getString("title"));
                     movie.setRating(String.valueOf(response.getDouble("vote_average")));
@@ -243,11 +249,8 @@ public class MovieDetailActivityFragment extends Fragment {
 
                             int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
                                     new ComponentName(getActivity(), MoviesNowWidget.class));
-                            for (int i = 0; i< appWidgetIds.length; i++) {
-                                Log.d("Movies","id = " + appWidgetIds[i]);
-                            }
+
                             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds[0], R.id.widget_list);
-                            //MoviesNowWidget.updateAppWidget(getContext(), appWidgetManager, appWidgetIds[0]);
 
                         }
                     });
@@ -323,9 +326,6 @@ public class MovieDetailActivityFragment extends Fragment {
                         mRecyclerView.setHasFixedSize(true);
                         mRecyclerView.setAdapter(mAdapter);
                         mAdapter.notifyDataSetChanged();
-
-
-                        Log.d("movie", "review loaded" + reviewInfo.size());
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -355,12 +355,6 @@ public class MovieDetailActivityFragment extends Fragment {
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, data);
         return sharingIntent;
     }
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("id", id);
-        outState.putStringArrayList("trailerInfo", trailerInfo);
-        outState.putStringArrayList("reviewInfo", trailerInfo);
-    }
+
 
 }

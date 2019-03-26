@@ -3,20 +3,17 @@ package com.example.moviesnow.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
-import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.widget.FrameLayout;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -37,10 +34,17 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 public class MainActivity extends AppCompatActivity implements MovieTitleListAdapter.OnAdapterItemSelectedListener {
 
-    private DrawerLayout mDrawerLayout;
+    private FrameLayout mFrameLayout;
     private SearchBox search;
     private Toolbar toolbar;
     private FirebaseAnalytics mFirebaseAnalytics;
+    private Fragment currentFragment;
+    private PopularListFragment popularListFragment;
+    private HighestRatedListFragment highestRatedListFragment;
+    private FavouriteListFragment favouriteListFragment;
+
+    private boolean isMovieSearched;
+    private int tabPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,29 +59,36 @@ public class MainActivity extends AppCompatActivity implements MovieTitleListAda
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final ActionBar ab = getSupportActionBar();
-        if (ab != null) {
-            ab.setHomeAsUpIndicator(R.drawable.ic_menu);
-            ab.setDisplayHomeAsUpEnabled(true);
-        }
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        if (navigationView != null) {
-            setupDrawerContent(navigationView);
-        }
+        mFrameLayout = (FrameLayout) findViewById(R.id.frame_layout);
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         if (viewPager != null) {
             setupViewPager(viewPager);
         }
 
-
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        AdView mAdView = (AdView) mDrawerLayout.findViewById(R.id.adView);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                //do stuff here
+                tabPosition = tab.getPosition();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        AdView mAdView = (AdView) mFrameLayout.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
@@ -87,28 +98,19 @@ public class MainActivity extends AppCompatActivity implements MovieTitleListAda
 
     private void setupViewPager(ViewPager viewPager) {
         Adapter adapter = new Adapter(getSupportFragmentManager());
-        adapter.addFragment(new PopularListFragment(), getString(R.string.most_popular));
-        adapter.addFragment(new HighestRatedListFragment(), getString(R.string.highest_rated));
-        adapter.addFragment(new FavouriteListFragment(), getString(R.string.favourites));
+        popularListFragment = new PopularListFragment();
+        highestRatedListFragment = new HighestRatedListFragment();
+        favouriteListFragment = new FavouriteListFragment();
+
+        adapter.addFragment(popularListFragment, getString(R.string.most_popular));
+        adapter.addFragment(highestRatedListFragment, getString(R.string.highest_rated));
+        adapter.addFragment(favouriteListFragment, getString(R.string.favourites));
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(3);
     }
 
-    private void setupDrawerContent(NavigationView navigationView) {
-        navigationView.setNavigationItemSelectedListener(
-                new NavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        menuItem.setChecked(true);
-                        mDrawerLayout.closeDrawers();
-                        return true;
-                    }
-                });
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -116,9 +118,6 @@ public class MainActivity extends AppCompatActivity implements MovieTitleListAda
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
-                return true;
             case R.id.action_search:
                 openSearch();
                 return true;
@@ -147,7 +146,6 @@ public class MainActivity extends AppCompatActivity implements MovieTitleListAda
             @Override
             public void onSearchOpened() {
                 // Use this to tint the screen
-
             }
 
             @Override
@@ -165,14 +163,24 @@ public class MainActivity extends AppCompatActivity implements MovieTitleListAda
 
             @Override
             public void onSearch(String searchTerm) {
-                Toast.makeText(MainActivity.this, searchTerm + " Searched",
-                        Toast.LENGTH_LONG).show();
 
+                switch (tabPosition) {
+                    case 0:
+                        popularListFragment.searchMovieList(searchTerm);
+                        break;
+                    case 1:
+                        highestRatedListFragment.searchMovieList(searchTerm);
+                        break;
+                    case 2:
+                        favouriteListFragment.searchMovieList(searchTerm);
+                        break;
+                }
+
+                isMovieSearched = true;
             }
 
             @Override
             public void onSearchCleared() {
-
             }
 
         });
@@ -193,18 +201,45 @@ public class MainActivity extends AppCompatActivity implements MovieTitleListAda
         MovieDetailActivityFragment displayFrag = (MovieDetailActivityFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragment);
         if (displayFrag == null) {
-            // DisplayFragment (Fragment B) is not in the layout (handset layout),
-            // so start DisplayActivity (Activity B)
-            // and pass it the info about the selected item
             Intent mMovieDetailIntent = new Intent(MainActivity.this, MovieDetailActivity.class);
             mMovieDetailIntent.putExtra("id", id);
             startActivity(mMovieDetailIntent);
         } else {
-            // DisplayFragment (Fragment B) is in the layout (tablet layout),
-            // so tell the fragment to update
             displayFrag.updateContent(id);
         }
 
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event)  {
+        if (Integer.parseInt(android.os.Build.VERSION.SDK) > 5
+                && keyCode == KeyEvent.KEYCODE_BACK
+                && event.getRepeatCount() == 0) {
+            onBackPressed();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if(isMovieSearched) {
+            switch (tabPosition) {
+                case 0:
+                    popularListFragment.clearSearchList();
+                    break;
+                case 1:
+                    highestRatedListFragment.clearSearchList();
+                    break;
+                case 2:
+                    favouriteListFragment.clearSearchList();
+                    break;
+            }
+            isMovieSearched = false;
+        } else {
+            finish();
+        }
     }
 
     static class Adapter extends FragmentPagerAdapter {
@@ -222,6 +257,7 @@ public class MainActivity extends AppCompatActivity implements MovieTitleListAda
 
         @Override
         public Fragment getItem(int position) {
+
             return mFragments.get(position);
         }
 

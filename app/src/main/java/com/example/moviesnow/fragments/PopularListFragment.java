@@ -28,10 +28,6 @@ import com.example.moviesnow.models.Movie;
 import com.example.moviesnow.utils.AppController;
 import com.example.moviesnow.utils.TmdbUrls;
 
-/**
- * Created by Kushal on 01/08/15.
- * Popular List Fragment
- */
 
 public class PopularListFragment extends Fragment {
 
@@ -167,6 +163,25 @@ public class PopularListFragment extends Fragment {
             }
         });
         recyclerView.setAdapter(mAdapter);
+    }
+
+    public  void searchMovieList(String searchString) {
+        ArrayList<Movie> searchMoveList = new ArrayList<>();
+       for (Movie movie : mMovieList) {
+           if((movie.getTitle().toLowerCase()).contains(searchString.toLowerCase())) {
+               searchMoveList.add(movie);
+
+           }
+       }
+        mAdapter = new MovieTitleListAdapter(searchMoveList, getActivity());
+        mRecyclerView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    public void clearSearchList() {
+        mAdapter = new MovieTitleListAdapter(mMovieList, getActivity());
+        mRecyclerView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
     }
 
 }

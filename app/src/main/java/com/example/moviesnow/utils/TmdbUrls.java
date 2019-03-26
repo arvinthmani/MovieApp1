@@ -1,10 +1,5 @@
 package com.example.moviesnow.utils;
 
-/**
- * Created by Kushal on 12/7/15.
- * This is a helper class to get urls
- */
-
 public class TmdbUrls {
 
     public static String BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
