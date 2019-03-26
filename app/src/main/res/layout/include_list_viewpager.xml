@@ -5,6 +5,7 @@
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:contentDescription="@string/viewpager_layout"
     android:orientation="vertical">
 
     <android.support.design.widget.AppBarLayout
@@ -24,25 +25,27 @@
                 android:layout_height="64dp"
                 android:background="?attr/colorPrimary"
                 android:paddingBottom="8dp"
+                android:contentDescription="@string/toolbar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-            <!--<com.lapism.searchview.widget.SearchView-->
-                <!--android:id="@+id/search_box"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginLeft="-6dp"-->
-                <!--android:layout_marginRight="-6dp"-->
-                <!--android:layout_marginTop="-6dp"-->
-                <!--android:visibility="visible"/>-->
+            <com.quinny898.library.persistentsearch.SearchBox
+                android:id="@+id/search_box"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-6dp"
+                android:layout_marginRight="-6dp"
+                android:layout_marginTop="-6dp"
+                android:contentDescription="@string/search_box"
+                android:visibility="gone" />
 
         </FrameLayout>
 
         <android.support.design.widget.TabLayout
-            xmlns:ads="http://schemas.android.com/apk/res-auto"
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/tabs"
             app:tabIndicatorColor="@android:color/white"
             app:tabMode="scrollable"
             app:tabPaddingEnd="24dp"
@@ -54,6 +57,7 @@
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/viewpager_layout"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <com.google.android.gms.ads.AdView
@@ -62,6 +66,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:contentDescription="@string/ads_view"
         ads:adSize="BANNER"
         ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
 

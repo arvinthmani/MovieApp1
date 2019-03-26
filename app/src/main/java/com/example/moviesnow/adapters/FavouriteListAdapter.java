@@ -13,11 +13,10 @@ import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.ArrayList;
 
-import com.example.moviesnow.cinephile.FavouriteMovieDetailActivity;
+import com.example.moviesnow.activity.FavouriteMovieDetailActivity;
 import com.example.moviesnow.R;
 import com.example.moviesnow.models.Movie;
 import com.example.moviesnow.utils.AppController;
-import com.example.moviesnow.utils.Typefaces;
 
 public class FavouriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

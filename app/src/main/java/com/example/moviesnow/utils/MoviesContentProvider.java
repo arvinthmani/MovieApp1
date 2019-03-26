@@ -17,7 +17,7 @@ import java.util.HashMap;
 public class MoviesContentProvider extends ContentProvider {
 
 
-    private static final String AUTHORITY = "com.example.moviesnow.cinephile.provider";
+    private static final String AUTHORITY = "com.example.moviesnow.activity.provider";
     private static final String BASE_PATH = "movies";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH);
     private DatabaseHelper mDatabaseHelper;

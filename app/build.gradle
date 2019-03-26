@@ -34,6 +34,8 @@ dependencies {
     implementation 'com.lapism:searchview:27.1.1.0.0'
     implementation 'com.google.android.gms:play-services-ads:17.2.0'
     implementation 'com.google.firebase:firebase-core:16.0.8'
+    implementation 'com.quinny898.library.persistentsearch:library:1.0.0-SNAPSHOT'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
 
 }
 

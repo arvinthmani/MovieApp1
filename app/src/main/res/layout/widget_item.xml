@@ -12,13 +12,15 @@
         android:layout_gravity="end"
         android:layout_weight="0.315"
         android:adjustViewBounds="true"
-        android:src="@mipmap/video_camera" />
+        android:src="@mipmap/video_camera"
+        android:contentDescription="video_camera_imageview"/>
 
     <TextView
         android:id="@+id/widget_title"
         android:layout_width="match_parent"
         android:layout_gravity="center"
         android:layout_marginLeft="5dp"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/movie_text_view"/>
 
 </LinearLayout>

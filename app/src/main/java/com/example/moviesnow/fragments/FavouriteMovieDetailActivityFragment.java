@@ -117,7 +117,7 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
             }
         });
 
-        mToolbar.inflateMenu(R.menu.menu_movie_detail);
+//        mToolbar.inflateMenu(R.menu.menu_movie_detail);
 
 
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {

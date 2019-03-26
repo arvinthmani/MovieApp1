@@ -355,4 +355,12 @@ public class MovieDetailActivityFragment extends Fragment {
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, data);
         return sharingIntent;
     }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("id", id);
+        outState.putStringArrayList("trailerInfo", trailerInfo);
+        outState.putStringArrayList("reviewInfo", trailerInfo);
+    }
+
 }

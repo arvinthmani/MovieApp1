@@ -1,7 +1,5 @@
 package com.example.moviesnow.widget;
 
-import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,18 +8,12 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import com.android.volley.toolbox.NetworkImageView;
 import com.example.moviesnow.R;
-import com.example.moviesnow.cinephile.MainActivity;
-import com.example.moviesnow.fragments.FavouriteListFragment;
 import com.example.moviesnow.models.Movie;
-import com.example.moviesnow.utils.AppController;
-import com.example.moviesnow.utils.ContentProviderHelperMethods;
 import com.example.moviesnow.utils.DatabaseHelper;
 import com.example.moviesnow.utils.MoviesContentProvider;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MoviesListDataProvider implements RemoteViewsService.RemoteViewsFactory {
 

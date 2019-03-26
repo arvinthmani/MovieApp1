@@ -79,6 +79,12 @@ public class FavouriteListFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("mMovieList", mMovieList);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         getMovieList();

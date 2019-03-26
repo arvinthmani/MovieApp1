@@ -18,7 +18,15 @@ allprojects {
     repositories {
         google()
         jcenter()
-        
+        mavenCentral()
+        mavenLocal()
+        maven {
+            url 'http://repo.spring.io/snapshot'
+        }
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+        }
+        maven { url "https://jitpack.io" }
     }
 }
 

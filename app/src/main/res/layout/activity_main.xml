@@ -5,28 +5,20 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
-
-    <!--<com.google.android.gms.ads.AdView-->
-        <!--android:id="@+id/adView"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:visibility="visible"-->
-        <!--app:adSize="BANNER"-->
-        <!--app:adUnitId="ca-app-pub-2376938549117340/3700712067" />-->
+    android:fitsSystemWindows="true"
+    android:contentDescription="@string/drawer_layout">
 
     <include layout="@layout/include_list_viewpager" />
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        android:contentDescription="@string/navigation_view"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/drawer_view" />
+        app:menu="@menu/drawer_view"/>
 
 
 </android.support.v4.widget.DrawerLayout>

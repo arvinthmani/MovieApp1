@@ -13,7 +13,8 @@
         android:paddingLeft="32dp"
         android:paddingRight="32dp"
         android:paddingTop="16dp"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:contentDescription="@string/review_author_text"/>
 
     <TextView
         android:id="@+id/review_text"
@@ -23,12 +24,14 @@
         android:paddingBottom="16dp"
         android:paddingLeft="32dp"
         android:paddingRight="32dp"
-        android:paddingTop="16dp" />
+        android:paddingTop="16dp"
+        android:contentDescription="@string/review_text"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_margin="16dp"
         android:background="#20000000"
-        android:padding="8dp" />
+        android:padding="8dp"
+        android:contentDescription="@string/border_layout"/>
 </LinearLayout>

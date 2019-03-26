@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/detail_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp">
+        android:layout_marginBottom="24dp"
+        android:contentDescription="@string/detail_holder_layout">
 
         <com.example.moviesnow.utils.PaletteNetworkImageView
             android:id="@+id/image"
@@ -18,6 +20,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:adjustViewBounds="true"
+            android:contentDescription="@string/network_image_view"
             android:scaleType="centerCrop" />
 
         <TextView
@@ -29,7 +32,8 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:paddingTop="8dp"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:contentDescription="@string/title_text"/>
 
         <TextView
             android:id="@+id/tagline"
@@ -40,7 +44,8 @@
             android:paddingBottom="8dp"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:textStyle="italic" />
+            android:textStyle="italic"
+            android:contentDescription="@string/tagline_text"/>
 
         <TextView
             android:id="@+id/date_status"
@@ -50,7 +55,8 @@
             android:layout_toRightOf="@id/image"
             android:paddingBottom="8dp"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp" />
+            android:paddingRight="16dp"
+            android:contentDescription="@string/date_status"/>
 
 
         <TextView
@@ -61,7 +67,8 @@
             android:layout_toRightOf="@id/image"
             android:paddingBottom="8dp"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp" />
+            android:paddingRight="16dp"
+            android:contentDescription="@string/duration_text"/>
 
     </RelativeLayout>
 
@@ -101,7 +108,8 @@
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_ratings" />
+                    android:src="@drawable/ic_ratings"
+                    android:contentDescription="@string/ratings_background"/>
 
                 <TextView
                     android:id="@+id/rating"
@@ -110,6 +118,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:textColor="@android:color/white"
+                    android:contentDescription="rating_text"
                     android:textSize="11sp" />
 
             </FrameLayout>
@@ -123,7 +132,8 @@
                 android:ellipsize="end"
                 android:gravity="center"
                 android:maxLines="1"
-                android:textSize="11sp" />
+                android:textSize="11sp"
+                android:contentDescription="@string/vote_count_text"/>
         </LinearLayout>
 
         <LinearLayout
@@ -147,7 +157,8 @@
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_genre" />
+                    android:src="@drawable/ic_genre"
+                    android:contentDescription="@string/genre_background_view"/>
             </FrameLayout>
 
             <TextView
@@ -157,7 +168,8 @@
                 android:layout_gravity="center_horizontal"
                 android:gravity="center"
                 android:maxLines="1"
-                android:textSize="11sp" />
+                android:textSize="11sp"
+                android:contentDescription="@string/genre_text"/>
         </LinearLayout>
 
 
@@ -182,7 +194,8 @@
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_normal_background" />
+                    android:src="@drawable/ic_normal_background"
+                    android:contentDescription="@string/pop_background_view"/>
 
                 <TextView
                     android:id="@+id/popularity"
@@ -191,7 +204,8 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:textColor="@android:color/white"
-                    android:textSize="11sp" />
+                    android:textSize="11sp"
+                    android:contentDescription="@string/popularity_value"/>
 
             </FrameLayout>
 
@@ -202,7 +216,8 @@
                 android:layout_gravity="center_horizontal"
                 android:gravity="center"
                 android:text="@string/popularity"
-                android:textSize="11sp" />
+                android:textSize="11sp"
+                android:contentDescription="@string/popularity_text"/>
         </LinearLayout>
 
         <LinearLayout
@@ -225,7 +240,7 @@
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:layout_gravity="center"
-
+                    android:contentDescription="@string/lang_bg_view"
                     android:src="@drawable/ic_normal_background" />
 
                 <TextView
@@ -235,6 +250,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:textColor="@android:color/white"
+                    android:contentDescription="@string/lang_value_view"
                     android:textSize="11sp" />
 
             </FrameLayout>
@@ -246,7 +262,8 @@
                 android:layout_gravity="center_horizontal"
                 android:gravity="center"
                 android:text="@string/language"
-                android:textSize="11sp" />
+                android:textSize="11sp"
+                android:contentDescription="@string/lang_text"/>
         </LinearLayout>
 
     </RelativeLayout>
@@ -257,20 +274,23 @@
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
         android:background="#20000000"
-        android:padding="8dp" />
+        android:padding="8dp"
+        android:contentDescription="@string/overview_view"/>
 
     <TextView
         android:id="@+id/overview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="16dp" />
+        android:padding="16dp"
+        android:contentDescription="@string/overview_textview"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="16dp"
         android:background="#20000000"
-        android:padding="8dp" />
+        android:padding="8dp"
+        android:contentDescription="@string/border_layout"/>
 
 </LinearLayout>
