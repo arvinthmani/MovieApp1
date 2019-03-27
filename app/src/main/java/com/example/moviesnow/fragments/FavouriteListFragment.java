@@ -1,5 +1,6 @@
 package com.example.moviesnow.fragments;
 
+import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,7 +23,7 @@ import com.example.moviesnow.roomdb.MovieInfo;
 
 public class FavouriteListFragment extends Fragment {
 
-    private ArrayList<MovieInfo> mMovieList = new ArrayList<>();
+    private static List<MovieInfo> mMovieList = new ArrayList<MovieInfo>();
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private GridLayoutManager mGridLayoutManager;
@@ -31,8 +32,8 @@ public class FavouriteListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRecyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_popular_list, container, false);
-        mAdapter = new FavouriteListAdapter(mMovieList, getActivity());
         mGridLayoutManager = new GridLayoutManager(getActivity(), 3);
+        mAdapter = new FavouriteListAdapter(mMovieList, getActivity());
 
         mGridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -51,18 +52,17 @@ public class FavouriteListFragment extends Fragment {
 
     public void getMovieList() {
 
-        new Thread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        List<MovieInfo> list = MainActivity.movieDatabase.getMovieDao().getRecords();
-                        mMovieList.clear();
-                        for (MovieInfo movie : list) {
-                            mMovieList.add(movie);
-                        }
-                    }
+        MainActivity.movieViewModel.getMovieEntityLiveData().observe(this, new Observer<List<MovieInfo>>() {
+            @Override
+            public void onChanged(@Nullable List<MovieInfo> movieEntities) {
+                mMovieList = movieEntities;
+                if (mMovieList != null) {
+                    mAdapter = new FavouriteListAdapter(mMovieList, getActivity());
+                    mRecyclerView.setAdapter(mAdapter);
+                    mAdapter.notifyDataSetChanged();
                 }
-        ).start();
+            }
+        });
 
     }
 
@@ -77,7 +77,7 @@ public class FavouriteListFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("mMovieList", mMovieList);
+        outState.putParcelableArrayList("mMovieList", (ArrayList<MovieInfo>)mMovieList);
     }
 
     @Override

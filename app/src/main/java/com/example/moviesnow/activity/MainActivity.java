@@ -1,5 +1,6 @@
 package com.example.moviesnow.activity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -15,8 +16,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
-import com.example.moviesnow.roomdb.MovieDatabase;
 import com.example.moviesnow.roomdb.MovieInfo;
+import com.example.moviesnow.roomdb.MovieViewModel;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import  com.quinny898.library.persistentsearch.SearchBox;
@@ -48,14 +49,14 @@ public class MainActivity extends AppCompatActivity implements MovieTitleListAda
     private int tabPosition;
     private static List<MovieInfo> movieList;
 
-    public static MovieDatabase movieDatabase;
-
+    public static MovieViewModel movieViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mFirebaseAnalytics.logEvent("MainActivity",savedInstanceState);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -93,7 +94,8 @@ public class MainActivity extends AppCompatActivity implements MovieTitleListAda
             }
         });
 
-        movieDatabase = MovieDatabase.getInstance(this);
+        movieViewModel = ViewModelProviders.of(this).get(MovieViewModel.class);
+
 
         AdView mAdView = (AdView) mFrameLayout.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
@@ -279,11 +281,4 @@ public class MainActivity extends AppCompatActivity implements MovieTitleListAda
         }
     }
 
-    public static void updateMoviesList() {
-        movieList = movieDatabase.getMovieDao().getRecords();
-    }
-
-    public static List<MovieInfo> getMovies() {
-        return movieList;
-    }
 }

@@ -1,31 +1,26 @@
 package com.example.moviesnow.widget;
 
-import android.annotation.SuppressLint;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.example.moviesnow.R;
-import com.example.moviesnow.activity.MainActivity;
-import com.example.moviesnow.fragments.FavouriteMovieDetailActivityFragment;
 import com.example.moviesnow.roomdb.MovieDatabase;
 import com.example.moviesnow.roomdb.MovieInfo;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class MoviesListDataProvider implements RemoteViewsService.RemoteViewsFactory {
 
     List<MovieInfo> mMovieList = new ArrayList<>();
     Context context;
     Intent intent;
-
+    MovieDatabase db;
 
     public MoviesListDataProvider(Context context, Intent intent) {
         this.context = context;
@@ -35,12 +30,12 @@ public class MoviesListDataProvider implements RemoteViewsService.RemoteViewsFac
 
     @Override
     public void onCreate() {
-        new AsyncTaskRunner().execute(context);
+        db = MovieDatabase.getInstance(context);
     }
 
     @Override
     public void onDataSetChanged() {
-        mMovieList = MainActivity.getMovies();
+        new AsyncTaskRunner().execute(context);
     }
 
 
@@ -48,16 +43,12 @@ public class MoviesListDataProvider implements RemoteViewsService.RemoteViewsFac
 
         @Override
         protected List<MovieInfo> doInBackground(Context... context) {
-
-            List<MovieInfo> movieList;
-            MovieDatabase db = MovieDatabase.getInstance(context[0]);
-            movieList = db.getMovieDao().getRecords();
-
-            return movieList;
+            return db.getMovieDao().getAllRecords();
         }
 
         protected void onPostExecute(List<MovieInfo> movieList) {
             super.onPostExecute(movieList);
+
             if (movieList != null && mMovieList != null) {
                 if (mMovieList.size() != movieList.size())
                 {
@@ -72,9 +63,7 @@ public class MoviesListDataProvider implements RemoteViewsService.RemoteViewsFac
                     }
                 }
             }
-
         }
-
     }
 
     @Override

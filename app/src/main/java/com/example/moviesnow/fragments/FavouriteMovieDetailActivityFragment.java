@@ -1,6 +1,7 @@
 package com.example.moviesnow.fragments;
 
 import android.appwidget.AppWidgetManager;
+import android.arch.lifecycle.Observer;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -23,6 +24,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.example.moviesnow.activity.MainActivity;
 import com.example.moviesnow.adapters.MovieDetailsAdapter;
@@ -50,8 +52,6 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
     private ArrayList<String> reviewInfo = new ArrayList<>();
 
     private FloatingActionButton fab;
-
-
 
     public FavouriteMovieDetailActivityFragment() {
     }
@@ -145,11 +145,24 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
 
     public void getMovieDataFromID(final String id) {
 
+        MainActivity.movieViewModel.getMovieEntityLiveData().observe(this, new Observer<List<MovieInfo>>() {
+            @Override
+            public void onChanged(@Nullable List<MovieInfo> movieEntities) {
+                AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getActivity());
+
+                int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
+                        new ComponentName(getActivity(), MoviesNowWidget.class));
+                if(appWidgetIds.length > 0) {
+                    appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds[0], R.id.widget_list);
+                }
+            }
+        });
+
         new Thread(
                 new Runnable() {
                     @Override
                     public void run() {
-                        movie = MainActivity.movieDatabase.getMovieDao().getRecord(id);
+                        movie = MainActivity.movieViewModel.getRecord(id);
                         getActivity().runOnUiThread(
                                 new Runnable() {
                                     @Override
@@ -164,7 +177,7 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
                                 }
                         );
 
-                        if (MainActivity.movieDatabase.getMovieDao().checkRecordPresent(movie.id)) {
+                        if (MainActivity.movieViewModel.checkRecordPresent(movie.id)) {
                             getActivity().runOnUiThread(
                                     new Runnable() {
                                         @Override
@@ -196,9 +209,8 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
                     @Override
                     public void run() {
 
-                        if (MainActivity.movieDatabase.getMovieDao().checkRecordPresent(movie.id)) {
-                            MainActivity.movieDatabase.getMovieDao().deleteRecord(id);
-                            MainActivity.updateMoviesList();
+                        if (MainActivity.movieViewModel.checkRecordPresent(movie.id)) {
+                            MainActivity.movieViewModel.deleteRecord(id);
                             getActivity().runOnUiThread(
                                     new Runnable() {
                                         @Override
@@ -212,8 +224,7 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
 
                         } else {
                             movie.isFavorite = true;
-                            MainActivity.movieDatabase.getMovieDao().insertRecord(movie);
-                            MainActivity.updateMoviesList();
+                            MainActivity.movieViewModel.insertRecord(movie);
 
                             getActivity().runOnUiThread(
                                     new Runnable() {
@@ -229,21 +240,6 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
 
 
                         }
-                        getActivity().runOnUiThread(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getActivity());
-
-                                        int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
-                                                new ComponentName(getActivity(), MoviesNowWidget.class));
-                                        if(appWidgetIds.length > 0) {
-                                            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds[0], R.id.widget_list);
-                                        }
-
-                                    }
-                                }
-                        );
                     }
 
                 }).start();
