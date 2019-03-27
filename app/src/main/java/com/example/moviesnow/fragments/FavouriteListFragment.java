@@ -12,16 +12,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import com.example.moviesnow.activity.MainActivity;
 import com.example.moviesnow.adapters.FavouriteListAdapter;
 import com.example.moviesnow.R;
-import com.example.moviesnow.models.Movie;
-import com.example.moviesnow.utils.ContentProviderHelperMethods;
+import com.example.moviesnow.roomdb.MovieInfo;
 
 
 public class FavouriteListFragment extends Fragment {
 
-    private ArrayList<Movie> mMovieList = new ArrayList<>();
+    private ArrayList<MovieInfo> mMovieList = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private GridLayoutManager mGridLayoutManager;
@@ -50,14 +51,18 @@ public class FavouriteListFragment extends Fragment {
 
     public void getMovieList() {
 
-        ArrayList<Movie> list = new ArrayList<>(ContentProviderHelperMethods
-                .getMovieListFromDatabase(getActivity()));
-        mMovieList.clear();
-
-        for (Movie movie : list) {
-            mMovieList.add(movie);
-
-        }
+        new Thread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        List<MovieInfo> list = MainActivity.movieDatabase.getMovieDao().getRecords();
+                        mMovieList.clear();
+                        for (MovieInfo movie : list) {
+                            mMovieList.add(movie);
+                        }
+                    }
+                }
+        ).start();
 
     }
 
@@ -91,14 +96,14 @@ public class FavouriteListFragment extends Fragment {
     }
 
     public  void searchMovieList(String searchString) {
-        ArrayList<Movie> searchMoveList = new ArrayList<>();
-        for (Movie movie : mMovieList) {
-            if((movie.getTitle().toLowerCase()).contains(searchString.toLowerCase())) {
-                searchMoveList.add(movie);
+        ArrayList<MovieInfo> searchMovieList = new ArrayList<>();
+        for (MovieInfo movie : mMovieList) {
+            if((movie.getName().toLowerCase()).contains(searchString.toLowerCase())) {
+                searchMovieList.add(movie);
 
             }
         }
-        mAdapter = new FavouriteListAdapter(searchMoveList, getActivity());
+        mAdapter = new FavouriteListAdapter(searchMovieList, getActivity());
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
     }

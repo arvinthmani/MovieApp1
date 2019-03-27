@@ -2,10 +2,8 @@ package com.example.moviesnow.fragments;
 
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -26,13 +24,11 @@ import android.view.WindowManager;
 
 import java.util.ArrayList;
 
+import com.example.moviesnow.activity.MainActivity;
 import com.example.moviesnow.adapters.MovieDetailsAdapter;
 import com.example.moviesnow.R;
-import com.example.moviesnow.models.MovieDetails;
+import com.example.moviesnow.roomdb.MovieInfo;
 import com.example.moviesnow.utils.AppController;
-import com.example.moviesnow.utils.ContentProviderHelperMethods;
-import com.example.moviesnow.utils.DatabaseHelper;
-import com.example.moviesnow.utils.MoviesContentProvider;
 import com.example.moviesnow.utils.PaletteNetworkImageView;
 import com.example.moviesnow.widget.MoviesNowWidget;
 
@@ -40,7 +36,7 @@ import com.example.moviesnow.widget.MoviesNowWidget;
 public class FavouriteMovieDetailActivityFragment extends Fragment {
 
     private String id;
-    private MovieDetails movie;
+    private MovieInfo movie;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -55,6 +51,8 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
 
     private FloatingActionButton fab;
 
+
+
     public FavouriteMovieDetailActivityFragment() {
     }
 
@@ -65,7 +63,7 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
 
 
         id = getActivity().getIntent().getStringExtra("id");
-        movie = null;
+        movie = new MovieInfo();
 
         mRecyclerView = (RecyclerView) v.findViewById(R.id.recycler_movie_details);
         mCollapsingToolbarLayout = (CollapsingToolbarLayout) v.findViewById(R.id.collapsing_toolbar_layout_movie_details);
@@ -116,7 +114,7 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
             public boolean onMenuItemClick(MenuItem item) {
 
                 if (item.getItemId() == R.id.action_share) {
-                    startActivity(Intent.createChooser(shareIntent(movie.getTitle()), getResources().getString(R.string.share_via)));
+                    startActivity(Intent.createChooser(shareIntent(movie.getName()), getResources().getString(R.string.share_via)));
                     return true;
                 }
                 return true;
@@ -146,67 +144,110 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
     }
 
     public void getMovieDataFromID(final String id) {
-        movie = ContentProviderHelperMethods.getMovieFromDatabase(getActivity(), id);
-        mBackdrop.setImageUrl(movie.getBackdrop(), AppController.getInstance().getImageLoader());
-        mCollapsingToolbarLayout.setTitle(movie.getTitle());
 
-        mAdapter = new MovieDetailsAdapter(movie, trailerInfo, reviewInfo, getActivity());
-        mRecyclerView.setAdapter(mAdapter);
+        new Thread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        movie = MainActivity.movieDatabase.getMovieDao().getRecord(id);
+                        getActivity().runOnUiThread(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mBackdrop.setImageUrl(movie.getBackDrop(), AppController.getInstance().getImageLoader());
+                                        mCollapsingToolbarLayout.setTitle(movie.getName());
 
-        boolean isMovieInDB = ContentProviderHelperMethods
-                .isMovieInDatabase(getActivity(),
-                        String.valueOf(movie.getId()));
-        if (isMovieInDB) {
-            fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like));
-        } else {
-            fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like_outline));
-        }
+                                        mAdapter = new MovieDetailsAdapter(movie, trailerInfo, reviewInfo, getActivity());
+                                        mRecyclerView.setAdapter(mAdapter);
 
+                                    }
+                                }
+                        );
+
+                        if (MainActivity.movieDatabase.getMovieDao().checkRecordPresent(movie.id)) {
+                            getActivity().runOnUiThread(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like));
+                                        }
+                                    }
+                            );
+                        } else {
+                            getActivity().runOnUiThread(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like_outline));
+                                        }
+                                    }
+                            );
+                        }
+                    }
+                }
+        ).start();
+
+        fab.show();
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
 
-                boolean isMovieInDB = ContentProviderHelperMethods
-                        .isMovieInDatabase(getActivity(), String.valueOf(movie.getId()));
-                if (isMovieInDB) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
 
-                    Uri contentUri = MoviesContentProvider.CONTENT_URI;
-                    getActivity().getContentResolver().delete(contentUri, "id=?", new String[]{String.valueOf(movie.getId())});
-                    Snackbar.make(view, getResources().getString(R.string.removed_from_favourites), Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                        if (MainActivity.movieDatabase.getMovieDao().checkRecordPresent(movie.id)) {
+                            MainActivity.movieDatabase.getMovieDao().deleteRecord(id);
+                            MainActivity.updateMoviesList();
+                            getActivity().runOnUiThread(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Snackbar.make(view, getResources().getString(R.string.removed_from_favourites), Snackbar.LENGTH_LONG)
+                                                    .setAction("Action", null).show();
+                                            fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like_outline));
+                                        }
+                                    }
+                            );
 
-                    fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like_outline));
+                        } else {
+                            movie.isFavorite = true;
+                            MainActivity.movieDatabase.getMovieDao().insertRecord(movie);
+                            MainActivity.updateMoviesList();
 
-                } else {
-                    ContentValues values = new ContentValues();
-                    values.put(DatabaseHelper.KEY_ID, movie.getId());
-                    values.put(DatabaseHelper.KEY_TITLE, movie.getTitle());
-                    values.put(DatabaseHelper.KEY_RATING, movie.getRating());
-                    values.put(DatabaseHelper.KEY_GENRE, movie.getGenre());
-                    values.put(DatabaseHelper.KEY_DATE, movie.getDate());
-                    values.put(DatabaseHelper.KEY_STATUS, movie.getStatus());
-                    values.put(DatabaseHelper.KEY_OVERVIEW, movie.getOverview());
-                    values.put(DatabaseHelper.KEY_BACKDROP, movie.getBackdrop());
-                    values.put(DatabaseHelper.KEY_VOTE_COUNT, movie.getVoteCount());
-                    values.put(DatabaseHelper.KEY_TAG_LINE, movie.getTagLine());
-                    values.put(DatabaseHelper.KEY_RUN_TIME, movie.getRuntime());
-                    values.put(DatabaseHelper.KEY_LANGUAGE, movie.getLanguage());
-                    values.put(DatabaseHelper.KEY_POPULARITY, movie.getPopularity());
-                    values.put(DatabaseHelper.KEY_POSTER, movie.getPoster());
+                            getActivity().runOnUiThread(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Snackbar.make(view, getResources().getString(R.string.added_to_favourites), Snackbar.LENGTH_LONG)
+                                                    .show();
 
-                    getActivity().getContentResolver().insert(MoviesContentProvider.CONTENT_URI, values);
+                                            fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like));
+                                        }
+                                    }
+                            );
 
-                    Snackbar.make(view, getResources().getString(R.string.added_to_favourites), Snackbar.LENGTH_LONG)
-                            .show();
 
-                    fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like));
+                        }
+                        getActivity().runOnUiThread(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getActivity());
 
-                }
-                AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getActivity());
+                                        int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
+                                                new ComponentName(getActivity(), MoviesNowWidget.class));
+                                        if(appWidgetIds.length > 0) {
+                                            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds[0], R.id.widget_list);
+                                        }
 
-                int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
-                        new ComponentName(getActivity(), MoviesNowWidget.class));
-                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds[0], R.id.widget_list);
+                                    }
+                                }
+                        );
+                    }
+
+                }).start();
+
             }
         });
 
@@ -220,4 +261,6 @@ public class FavouriteMovieDetailActivityFragment extends Fragment {
         sharingIntent.putExtra(Intent.EXTRA_TEXT, data);
         return sharingIntent;
     }
+
+
 }

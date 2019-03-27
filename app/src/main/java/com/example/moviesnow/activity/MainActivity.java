@@ -15,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
+import com.example.moviesnow.roomdb.MovieDatabase;
+import com.example.moviesnow.roomdb.MovieInfo;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import  com.quinny898.library.persistentsearch.SearchBox;
@@ -38,13 +40,16 @@ public class MainActivity extends AppCompatActivity implements MovieTitleListAda
     private SearchBox search;
     private Toolbar toolbar;
     private FirebaseAnalytics mFirebaseAnalytics;
-    private Fragment currentFragment;
     private PopularListFragment popularListFragment;
     private HighestRatedListFragment highestRatedListFragment;
     private FavouriteListFragment favouriteListFragment;
 
     private boolean isMovieSearched;
     private int tabPosition;
+    private static List<MovieInfo> movieList;
+
+    public static MovieDatabase movieDatabase;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements MovieTitleListAda
 
             }
         });
+
+        movieDatabase = MovieDatabase.getInstance(this);
 
         AdView mAdView = (AdView) mFrameLayout.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
@@ -270,5 +277,13 @@ public class MainActivity extends AppCompatActivity implements MovieTitleListAda
         public CharSequence getPageTitle(int position) {
             return mFragmentTitles.get(position);
         }
+    }
+
+    public static void updateMoviesList() {
+        movieList = movieDatabase.getMovieDao().getRecords();
+    }
+
+    public static List<MovieInfo> getMovies() {
+        return movieList;
     }
 }

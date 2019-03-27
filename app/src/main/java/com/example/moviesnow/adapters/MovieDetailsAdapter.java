@@ -18,20 +18,20 @@ import com.balysv.materialripple.MaterialRippleLayout;
 import java.util.ArrayList;
 
 import com.example.moviesnow.R;
-import com.example.moviesnow.models.MovieDetails;
+import com.example.moviesnow.roomdb.MovieInfo;
 import com.example.moviesnow.utils.AppController;
 import com.example.moviesnow.utils.PaletteNetworkImageView;
 import com.example.moviesnow.utils.TmdbUrls;
 
 public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private MovieDetails movie;
+    private MovieInfo movie;
     private Activity mAct;
     private LayoutInflater mInflater;
     private ArrayList<String> trailerInfo;
     private ArrayList<String> reviewInfo;
 
-    public MovieDetailsAdapter(MovieDetails movie, ArrayList<String> trailerInfo, ArrayList<String> reviewInfo, Activity mActivity) {
+    public MovieDetailsAdapter(MovieInfo movie, ArrayList<String> trailerInfo, ArrayList<String> reviewInfo, Activity mActivity) {
         this.movie = movie;
         this.trailerInfo = trailerInfo;
         this.reviewInfo = reviewInfo;
@@ -70,29 +70,27 @@ public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case 0:
                 ((ViewHolderDetails) holder).getImageView().setImageUrl(movie.getPoster(),
                         AppController.getInstance().getImageLoader());
-                ((ViewHolderDetails) holder).getTitleView().setText(movie.getTitle());
+                ((ViewHolderDetails) holder).getTitleView().setText(movie.getName());
                 if (!movie.getTagLine().equals("")) {
-                    ((ViewHolderDetails) holder).getTaglineView().setText("\"" + movie.getTagLine() + "\"");
+                    ((ViewHolderDetails) holder).getTaglineView().setText(movie.getTagLine());
                 } else {
                     ((ViewHolderDetails) holder).getTaglineView().setVisibility(View.GONE);
                 }
-                ((ViewHolderDetails) holder).getDateStatusView().setText(movie.getDate()
-                        + " (" + movie.getStatus() + ")");
-                ((ViewHolderDetails) holder).getDurationView().setText(mAct.getString(R.string.duration)
-                        + movie.getRuntime() + mAct.getString(R.string.min));
+                ((ViewHolderDetails) holder).getDateStatusView().setText(String.format("%s ( %s )",  movie.getReleaseDate(), movie.getStatus()));
+                ((ViewHolderDetails) holder).getDurationView().setText(String.format("%s", mAct.getString(R.string.duration) + movie.getRuntime() + mAct.getString(R.string.min)));
                 ((ViewHolderDetails) holder).getRatingView().setText(movie.getRating());
                 try {
-                    ((ViewHolderDetails) holder).getGenreView().setText(movie.getGenre().substring(0,
-                            movie.getGenre().indexOf(",")));
+                    ((ViewHolderDetails) holder).getGenreView().setText(movie.getGenere().substring(0,
+                            movie.getGenere().indexOf(",")));
                 } catch (StringIndexOutOfBoundsException e) {
                     e.printStackTrace();
-                    ((ViewHolderDetails) holder).getGenreView().setText(movie.getGenre().substring(0,
-                            movie.getGenre().indexOf(".")));
+                    ((ViewHolderDetails) holder).getGenreView().setText(movie.getGenere().substring(0,
+                            movie.getGenere().indexOf(".")));
                 }
                 ((ViewHolderDetails) holder).getPopularityView().setText(movie.getPopularity().substring(0, 4));
                 ((ViewHolderDetails) holder).getLanguageView().setText(movie.getLanguage());
                 ((ViewHolderDetails) holder).getOverviewView().setText(movie.getOverview());
-                ((ViewHolderDetails) holder).getVoteCountView().setText(movie.getVoteCount() + " votes");
+                ((ViewHolderDetails) holder).getVoteCountView().setText(String.format("%s votes",movie.getVoteCount()));
 
                 ((ViewHolderDetails) holder).getImageView().setResponseObserver(new PaletteNetworkImageView.ResponseObserver() {
                     @Override
@@ -117,8 +115,8 @@ public class MovieDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 final String[] data = trailerInfo.get(position - 1).split(",,");
                 ((ViewHolderTrailer) holder).getImageView().setImageUrl(TmdbUrls.YOUTUBE_THUMB + data[0] + TmdbUrls.YOUTUBE_MEDIUM_QUALITY, AppController.getInstance().getImageLoader());
                 ((ViewHolderTrailer) holder).getTitleView().setText(data[1]);
-                ((ViewHolderTrailer) holder).getSiteView().setText(mAct.getString(R.string.site) + data[2]);
-                ((ViewHolderTrailer) holder).getQualityView().setText(mAct.getString(R.string.quality) + data[3] + "p");
+                ((ViewHolderTrailer) holder).getSiteView().setText(String.format("%s", mAct.getString(R.string.site) + data[2]));
+                ((ViewHolderTrailer) holder).getQualityView().setText(String.format("%s",mAct.getString(R.string.quality) + data[3] + "p"));
 
                 ((ViewHolderTrailer) holder).getRippleLayout().setOnClickListener(new View.OnClickListener() {
                     @Override

@@ -2,10 +2,9 @@ package com.example.moviesnow.fragments;
 
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,6 +17,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,13 +34,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import com.example.moviesnow.activity.MainActivity;
 import com.example.moviesnow.adapters.MovieDetailsAdapter;
 import com.example.moviesnow.R;
-import com.example.moviesnow.models.MovieDetails;
+import com.example.moviesnow.roomdb.MovieInfo;
 import com.example.moviesnow.utils.AppController;
-import com.example.moviesnow.utils.ContentProviderHelperMethods;
-import com.example.moviesnow.utils.DatabaseHelper;
-import com.example.moviesnow.utils.MoviesContentProvider;
 import com.example.moviesnow.utils.PaletteNetworkImageView;
 import com.example.moviesnow.utils.TmdbUrls;
 import com.example.moviesnow.widget.MoviesNowWidget;
@@ -48,7 +46,7 @@ import com.example.moviesnow.widget.MoviesNowWidget;
 public class MovieDetailActivityFragment extends Fragment {
 
     private String id;
-    private MovieDetails movie;
+    private MovieInfo movie;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -72,7 +70,7 @@ public class MovieDetailActivityFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
         id = getActivity().getIntent().getStringExtra("id");
-        movie = new MovieDetails();
+        movie = new MovieInfo();
 
         getMovieDataFromID(id);
 
@@ -155,6 +153,143 @@ public class MovieDetailActivityFragment extends Fragment {
         outState.putStringArrayList("reviewInfo", reviewInfo);
     }
 
+    private class AsyncTaskRunner extends AsyncTask<JSONObject, Void, String> {
+        @Override
+        protected String doInBackground(JSONObject... response) {
+            try {
+                movie.setId(id);
+                movie.setName(response[0].getString("title"));
+                movie.setRating(String.valueOf(response[0].getDouble("vote_average")));
+                String genres = "";
+                JSONArray genreArray = response[0].getJSONArray("genres");
+                for (int i = 0; i < genreArray.length(); i++) {
+                    String genre = genreArray.getJSONObject(i).getString("name");
+                    if (i != genreArray.length() - 1)
+                        genres += genre + ", ";
+                    else
+                        genres += genre + ".";
+                }
+                movie.setGenere(genres);
+                movie.setReleaseDate(response[0].getString("release_date"));
+                movie.setStatus(response[0].getString("status"));
+                movie.setOverview(response[0].getString("overview"));
+                movie.setBackDrop("http://image.tmdb.org/t/p/w780/" + response[0].getString("backdrop_path"));
+                movie.setVoteCount(String.valueOf(response[0].getInt("vote_count")));
+                movie.setTagLine(response[0].getString("tagline"));
+                movie.setRuntime(String.valueOf(response[0].getInt("runtime")));
+                movie.setLanguage(response[0].getString("original_language"));
+                movie.setPopularity(String.valueOf(response[0].getDouble("popularity")));
+                movie.setPoster("http://image.tmdb.org/t/p/w342/" + response[0].getString("poster_path"));
+
+                getActivity().runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mBackdrop.setImageUrl(movie.getBackDrop(), AppController.getInstance().getImageLoader());
+                                mCollapsingToolbarLayout.setTitle(movie.getName());
+
+                                mAdapter = new MovieDetailsAdapter(movie, trailerInfo, reviewInfo, getActivity());
+                                mRecyclerView.setAdapter(mAdapter);                            }
+                        }
+                );
+
+
+                if (MainActivity.movieDatabase.getMovieDao().checkRecordPresent(movie.id)) {
+                    getActivity().runOnUiThread(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like));
+                                }
+                            }
+                    );
+                } else {
+                    getActivity().runOnUiThread(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like_outline));
+                                }
+                            }
+                    );
+                }
+                getActivity().runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                fab.show();
+                                fab.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(final View view) {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+
+                                                if (MainActivity.movieDatabase.getMovieDao().checkRecordPresent(movie.id)) {
+                                                    MainActivity.movieDatabase.getMovieDao().deleteRecord(movie.id);
+                                                    MainActivity.updateMoviesList();
+                                                    getActivity().runOnUiThread(
+                                                            new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    Snackbar.make(view, getResources().getString(R.string.removed_from_favourites), Snackbar.LENGTH_LONG)
+                                                                            .setAction("Action", null).show();
+
+                                                                    fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like_outline));
+                                                                }
+                                                            }
+                                                    );
+                                                } else {
+                                                    movie.isFavorite = true;
+                                                    MainActivity.movieDatabase.getMovieDao().insertRecord(movie);
+                                                    MainActivity.updateMoviesList();
+                                                    getActivity().runOnUiThread(
+                                                            new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    Snackbar.make(view, getResources().getString(R.string.added_to_favourites), Snackbar.LENGTH_LONG)
+                                                                            .setAction("Action", null).show();
+
+                                                                    fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like));
+                                                                }
+                                                            }
+                                                    );
+
+                                                }
+                                                getActivity().runOnUiThread(
+                                                        new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getActivity());
+
+                                                                int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
+                                                                        new ComponentName(getActivity(), MoviesNowWidget.class));
+                                                                if(appWidgetIds.length > 0) {
+                                                                    appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds[0], R.id.widget_list);
+                                                                }
+
+                                                            }
+                                                        }
+                                                );
+
+                                            }
+                                        }).start();
+
+                                    }
+                                });
+                            }
+                        }
+                );
+
+
+                getTrailerInfo(id);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
     public void updateContent(String id) {
         getMovieDataFromID(id);
     }
@@ -164,102 +299,8 @@ public class MovieDetailActivityFragment extends Fragment {
         JsonObjectRequest getDetails = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                try {
-                    movie.setId(Integer.valueOf(id));
-                    movie.setTitle(response.getString("title"));
-                    movie.setRating(String.valueOf(response.getDouble("vote_average")));
-                    String genres = "";
-                    JSONArray genreArray = response.getJSONArray("genres");
-                    for (int i = 0; i < genreArray.length(); i++) {
-                        String genre = genreArray.getJSONObject(i).getString("name");
-                        if (i != genreArray.length() - 1)
-                            genres += genre + ", ";
-                        else
-                            genres += genre + ".";
-                    }
-                    movie.setGenre(genres);
-                    movie.setDate(response.getString("release_date"));
-                    movie.setStatus(response.getString("status"));
-                    movie.setOverview(response.getString("overview"));
-                    movie.setBackdrop("http://image.tmdb.org/t/p/w780/" + response.getString("backdrop_path"));
-                    movie.setVoteCount(String.valueOf(response.getInt("vote_count")));
-                    movie.setTagLine(response.getString("tagline"));
-                    movie.setRuntime(String.valueOf(response.getInt("runtime")));
-                    movie.setLanguage(response.getString("original_language"));
-                    movie.setPopularity(String.valueOf(response.getDouble("popularity")));
-                    movie.setPoster("http://image.tmdb.org/t/p/w342/" + response.getString("poster_path"));
+                new AsyncTaskRunner().execute(response);
 
-                    mBackdrop.setImageUrl(movie.getBackdrop(), AppController.getInstance().getImageLoader());
-                    mCollapsingToolbarLayout.setTitle(movie.getTitle());
-
-                    mAdapter = new MovieDetailsAdapter(movie, trailerInfo, reviewInfo, getActivity());
-                    mRecyclerView.setAdapter(mAdapter);
-
-                    boolean isMovieInDB = ContentProviderHelperMethods
-                            .isMovieInDatabase(getActivity(),
-                                    String.valueOf(movie.getId()));
-                    if (isMovieInDB) {
-                        fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like));
-                    } else {
-                        fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like_outline));
-                    }
-
-                    fab.show();
-                    fab.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                            boolean isMovieInDB = ContentProviderHelperMethods
-                                    .isMovieInDatabase(getActivity(),
-                                            String.valueOf(movie.getId()));
-                            if (isMovieInDB) {
-                                Uri contentUri = MoviesContentProvider.CONTENT_URI;
-                                getActivity().getContentResolver().delete(contentUri, "id=?", new String[]{String.valueOf(movie.getId())});
-                                Snackbar.make(view, getResources().getString(R.string.removed_from_favourites), Snackbar.LENGTH_LONG)
-                                        .setAction("Action", null).show();
-                                fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like_outline));
-
-                            } else {
-                                ContentValues values = new ContentValues();
-                                values.put(DatabaseHelper.KEY_ID, movie.getId());
-                                values.put(DatabaseHelper.KEY_TITLE, movie.getTitle());
-                                values.put(DatabaseHelper.KEY_RATING, movie.getRating());
-                                values.put(DatabaseHelper.KEY_GENRE, movie.getGenre());
-                                values.put(DatabaseHelper.KEY_DATE, movie.getDate());
-                                values.put(DatabaseHelper.KEY_STATUS, movie.getStatus());
-                                values.put(DatabaseHelper.KEY_OVERVIEW, movie.getOverview());
-                                values.put(DatabaseHelper.KEY_BACKDROP, movie.getBackdrop());
-                                values.put(DatabaseHelper.KEY_VOTE_COUNT, movie.getVoteCount());
-                                values.put(DatabaseHelper.KEY_TAG_LINE, movie.getTagLine());
-                                values.put(DatabaseHelper.KEY_RUN_TIME, movie.getRuntime());
-                                values.put(DatabaseHelper.KEY_LANGUAGE, movie.getLanguage());
-                                values.put(DatabaseHelper.KEY_POPULARITY, movie.getPopularity());
-                                values.put(DatabaseHelper.KEY_POSTER, movie.getPoster());
-
-                                getActivity().getContentResolver().insert(MoviesContentProvider.CONTENT_URI, values);
-
-                                Snackbar.make(view, getResources().getString(R.string.added_to_favourites), Snackbar.LENGTH_LONG)
-                                        .setAction("Action", null).show();
-
-                                fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_like));
-
-                            }
-
-                            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getActivity());
-
-                            int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
-                                    new ComponentName(getActivity(), MoviesNowWidget.class));
-
-                            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds[0], R.id.widget_list);
-
-                        }
-                    });
-
-                    getTrailerInfo(id);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
             }
         }, new Response.ErrorListener() {
             @Override

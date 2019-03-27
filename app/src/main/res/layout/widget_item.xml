@@ -13,7 +13,7 @@
         android:layout_weight="0.315"
         android:adjustViewBounds="true"
         android:src="@mipmap/video_camera"
-        android:contentDescription="video_camera_imageview"/>
+        android:contentDescription="@string/video_camera_imageview"/>
 
     <TextView
         android:id="@+id/widget_title"

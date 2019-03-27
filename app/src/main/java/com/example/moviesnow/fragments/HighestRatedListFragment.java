@@ -1,5 +1,6 @@
 package com.example.moviesnow.fragments;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -24,13 +25,13 @@ import java.util.ArrayList;
 
 import com.example.moviesnow.adapters.MovieTitleListAdapter;
 import com.example.moviesnow.R;
-import com.example.moviesnow.models.Movie;
+import com.example.moviesnow.roomdb.MovieInfo;
 import com.example.moviesnow.utils.AppController;
 import com.example.moviesnow.utils.TmdbUrls;
 
 public class HighestRatedListFragment extends Fragment {
 
-    private ArrayList<Movie> mMovieList = new ArrayList<>();
+    private ArrayList<MovieInfo> mMovieList = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private GridLayoutManager mGridLayoutManager;
@@ -59,8 +60,9 @@ public class HighestRatedListFragment extends Fragment {
             }
         });
 
-        url = TmdbUrls.BASE_URL + TmdbUrls.API_KEY + TmdbUrls.SORT_R_RATED;
-        getMovieList(url);
+        AsyncTaskRunner runner = new AsyncTaskRunner();
+        runner.execute();
+
         setupRecyclerView(mRecyclerView);
         return mRecyclerView;
     }
@@ -69,7 +71,6 @@ public class HighestRatedListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            mMovieList = savedInstanceState.getParcelableArrayList("mMovieList");
             pageCount = savedInstanceState.getInt("pageCount");
             previousTotal = savedInstanceState.getInt("previousTotal");
             firstVisibleItem = savedInstanceState.getInt("firstVisibleItem");
@@ -82,13 +83,21 @@ public class HighestRatedListFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("mMovieList", mMovieList);
         outState.putInt("pageCount", pageCount);
         outState.putInt("previousTotal", previousTotal);
         outState.putInt("firstVisibleItem", firstVisibleItem);
         outState.putInt("visibleItemCount", visibleItemCount);
         outState.putInt("totalItemCount", totalItemCount);
         outState.putBoolean("loading", loading);
+    }
+
+    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
+        @Override
+        protected String doInBackground(String... strings) {
+            url = TmdbUrls.BASE_URL + TmdbUrls.API_KEY + TmdbUrls.SORT_R_RATED;
+            getMovieList(url);
+            return null;
+        }
     }
 
     private void getMovieList(String url) {
@@ -99,11 +108,13 @@ public class HighestRatedListFragment extends Fragment {
                     JSONArray mResultArray = response.getJSONArray("results");
                     for (int i = 0; i < mResultArray.length(); i++) {
                         JSONObject mResultObject = mResultArray.getJSONObject(i);
-                        Movie movie = new Movie(mResultObject.getString("title"),
-                                "http://image.tmdb.org/t/p/w342/" + mResultObject.getString("poster_path"),
-                                getResources().getString(R.string.release_date) + mResultObject.getString("release_date"),
-                                mResultObject.getString("overview"),
-                                String.valueOf(mResultObject.getInt("id")));
+                        MovieInfo movie = new MovieInfo();
+                        movie.setName(mResultObject.getString("title"));
+                        movie.setImageUrl("http://image.tmdb.org/t/p/w342/" + mResultObject.getString("poster_path"));
+                        movie.setReleaseDate(getResources().getString(R.string.release_date) + mResultObject.getString("release_date"));
+                        movie.setOverview(mResultObject.getString("overview"));
+                        movie.setId(String.valueOf(mResultObject.getInt("id")));
+
                         mMovieList.add(movie);
                     }
                 } catch (JSONException e) {
@@ -162,14 +173,14 @@ public class HighestRatedListFragment extends Fragment {
     }
 
     public  void searchMovieList(String searchString) {
-        ArrayList<Movie> searchMoveList = new ArrayList<>();
-        for (Movie movie : mMovieList) {
-            if((movie.getTitle().toLowerCase()).contains(searchString.toLowerCase())) {
-                searchMoveList.add(movie);
+        ArrayList<MovieInfo> searchMovieList = new ArrayList<>();
+        for (MovieInfo movie : mMovieList) {
+            if((movie.getName().toLowerCase()).contains(searchString.toLowerCase())) {
+                searchMovieList.add(movie);
 
             }
         }
-        mAdapter = new MovieTitleListAdapter(searchMoveList, getActivity());
+        mAdapter = new MovieTitleListAdapter(searchMovieList, getActivity());
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
     }

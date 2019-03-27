@@ -1,22 +1,28 @@
 package com.example.moviesnow.widget;
 
+import android.annotation.SuppressLint;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.example.moviesnow.R;
-import com.example.moviesnow.models.Movie;
-import com.example.moviesnow.utils.DatabaseHelper;
-import com.example.moviesnow.utils.MoviesContentProvider;
+import com.example.moviesnow.activity.MainActivity;
+import com.example.moviesnow.fragments.FavouriteMovieDetailActivityFragment;
+import com.example.moviesnow.roomdb.MovieDatabase;
+import com.example.moviesnow.roomdb.MovieInfo;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class MoviesListDataProvider implements RemoteViewsService.RemoteViewsFactory {
 
-    ArrayList<Movie> mMovieList = new ArrayList<>();
+    List<MovieInfo> mMovieList = new ArrayList<>();
     Context context;
     Intent intent;
 
@@ -25,15 +31,50 @@ public class MoviesListDataProvider implements RemoteViewsService.RemoteViewsFac
         this.context = context;
         this.intent = intent;
 
-        reloadMovieList();
     }
 
     @Override
-    public void onCreate() { }
+    public void onCreate() {
+        new AsyncTaskRunner().execute(context);
+    }
 
     @Override
     public void onDataSetChanged() {
-        reloadMovieList();
+        mMovieList = MainActivity.getMovies();
+    }
+
+
+    private class AsyncTaskRunner extends AsyncTask<Context, Void, List<MovieInfo>> {
+
+        @Override
+        protected List<MovieInfo> doInBackground(Context... context) {
+
+            List<MovieInfo> movieList;
+            MovieDatabase db = MovieDatabase.getInstance(context[0]);
+            movieList = db.getMovieDao().getRecords();
+
+            return movieList;
+        }
+
+        protected void onPostExecute(List<MovieInfo> movieList) {
+            super.onPostExecute(movieList);
+            if (movieList != null && mMovieList != null) {
+                if (mMovieList.size() != movieList.size())
+                {
+                    mMovieList.clear();
+                    mMovieList = movieList;
+                    AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+
+                    int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
+                            new ComponentName(context, MoviesNowWidget.class));
+                    if (appWidgetIds.length > 0) {
+                        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds[0], R.id.widget_list);
+                    }
+                }
+            }
+
+        }
+
     }
 
     @Override
@@ -43,14 +84,16 @@ public class MoviesListDataProvider implements RemoteViewsService.RemoteViewsFac
 
     @Override
     public int getCount() {
-        return mMovieList.size();
+        if (mMovieList != null) {
+            return mMovieList.size();
+        }
+        return 0;
     }
 
     @Override
     public RemoteViews getViewAt(int i) {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_item);
-        remoteViews.setTextViewText(R.id.widget_title, mMovieList.get(i).getTitle());
-
+        remoteViews.setTextViewText(R.id.widget_title, mMovieList.get(i).getName());
         return  remoteViews;
 
     }
@@ -75,24 +118,4 @@ public class MoviesListDataProvider implements RemoteViewsService.RemoteViewsFac
         return true;
     }
 
-    private void reloadMovieList() {
-
-        mMovieList.clear();
-        Uri contentUri = MoviesContentProvider.CONTENT_URI;
-        Cursor c = this.context.getContentResolver().query(contentUri, null, null, null, null);
-        if (c.moveToFirst()) {
-            do {
-
-                Movie movie = new Movie(c.getString(c.getColumnIndex(DatabaseHelper.KEY_TITLE)),
-                        c.getString(c.getColumnIndex(DatabaseHelper.KEY_POSTER)),
-                        c.getString(c.getColumnIndex(DatabaseHelper.KEY_DATE)),
-                        c.getString(c.getColumnIndex(DatabaseHelper.KEY_OVERVIEW)),
-                        c.getString(c.getColumnIndex(DatabaseHelper.KEY_ID)));
-
-                mMovieList.add(movie);
-            } while (c.moveToNext());
-        }
-        c.close();
-
-    }
 }

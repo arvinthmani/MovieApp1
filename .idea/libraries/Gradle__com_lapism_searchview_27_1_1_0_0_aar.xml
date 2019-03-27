@@ -1,11 +1,11 @@
 <component name="libraryTable">
   <library name="Gradle: com.lapism:searchview:27.1.1.0.0@aar">
     <ANNOTATIONS>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/searchview-27.1.1.0.0.aar/aeb838fab69e0df56f36d04c9410595d/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/searchview-27.1.1.0.0.aar/7bef8f4e436598fb3e1ac18d262507ec/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/searchview-27.1.1.0.0.aar/aeb838fab69e0df56f36d04c9410595d/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/searchview-27.1.1.0.0.aar/aeb838fab69e0df56f36d04c9410595d/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/searchview-27.1.1.0.0.aar/7bef8f4e436598fb3e1ac18d262507ec/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/searchview-27.1.1.0.0.aar/7bef8f4e436598fb3e1ac18d262507ec/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

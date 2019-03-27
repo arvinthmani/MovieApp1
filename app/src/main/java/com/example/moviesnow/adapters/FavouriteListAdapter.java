@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,16 +16,16 @@ import java.util.ArrayList;
 
 import com.example.moviesnow.activity.FavouriteMovieDetailActivity;
 import com.example.moviesnow.R;
-import com.example.moviesnow.models.Movie;
+import com.example.moviesnow.roomdb.MovieInfo;
 import com.example.moviesnow.utils.AppController;
 
 public class FavouriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private ArrayList<Movie> mMovieList = new ArrayList<Movie>();
+    private ArrayList<MovieInfo> mMovieList = new ArrayList<MovieInfo>();
     private Activity mAct;
     private LayoutInflater mInflater;
 
-    public FavouriteListAdapter(ArrayList<Movie> mMovieList, Activity activity) {
+    public FavouriteListAdapter(ArrayList<MovieInfo> mMovieList, Activity activity) {
         this.mMovieList = mMovieList;
         this.mAct = activity;
 
@@ -54,10 +55,11 @@ public class FavouriteListAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+
         switch (getItemViewType(position)) {
             case 2:
-                ((ViewHolderSmall) holder).getImageView().setImageUrl(mMovieList.get(position).getImage(), AppController.getInstance().getImageLoader());
-                ((ViewHolderSmall) holder).getTitleView().setText(mMovieList.get(position).getTitle());
+                ((ViewHolderSmall) holder).getImageView().setImageUrl(mMovieList.get(position).getPoster(), AppController.getInstance().getImageLoader());
+                ((ViewHolderSmall) holder).getTitleView().setText(mMovieList.get(position).getName());
 
                 ((ViewHolderSmall) holder).getImageView().setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -70,8 +72,8 @@ public class FavouriteListAdapter extends RecyclerView.Adapter<RecyclerView.View
 
                 break;
             case 1:
-                ((ViewHolderLarge) holder).getImageView().setImageUrl(mMovieList.get(position).getImage(), AppController.getInstance().getImageLoader());
-                ((ViewHolderLarge) holder).getTitleView().setText(mMovieList.get(position).getTitle());
+                ((ViewHolderLarge) holder).getImageView().setImageUrl(mMovieList.get(position).getPoster(), AppController.getInstance().getImageLoader());
+                ((ViewHolderLarge) holder).getTitleView().setText(mMovieList.get(position).getName());
                 ((ViewHolderLarge) holder).getOverviewView().setText(mMovieList.get(position).getOverview());
                 ((ViewHolderLarge) holder).getImageView().setOnClickListener(new View.OnClickListener() {
                     @Override

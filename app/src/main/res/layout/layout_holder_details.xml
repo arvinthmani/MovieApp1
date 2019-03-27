@@ -118,7 +118,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:textColor="@android:color/white"
-                    android:contentDescription="rating_text"
+                    android:contentDescription="@string/rating_text"
                     android:textSize="11sp" />
 
             </FrameLayout>

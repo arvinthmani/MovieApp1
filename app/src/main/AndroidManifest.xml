@@ -48,11 +48,6 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_movie_detail" />
 
-        <provider
-            android:name=".utils.MoviesContentProvider"
-            android:authorities="com.example.moviesnow.activity.provider"
-            android:exported="true" />
-
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />

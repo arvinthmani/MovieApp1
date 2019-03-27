@@ -11,19 +11,20 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.example.moviesnow.R;
-import com.example.moviesnow.models.Movie;
+import com.example.moviesnow.roomdb.MovieInfo;
 import com.example.moviesnow.utils.AppController;
 
 public class MovieTitleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private ArrayList<Movie> mMovieList = new ArrayList<>();
+    private List<MovieInfo> mMovieList = new ArrayList<MovieInfo>();
     private Activity mAct;
     private LayoutInflater mInflater;
     private OnAdapterItemSelectedListener mAdapterCallback;
 
-    public MovieTitleListAdapter(ArrayList<Movie> mMovieList, Activity activity) {
+    public MovieTitleListAdapter(ArrayList<MovieInfo> mMovieList, Activity activity) {
         this.mMovieList = mMovieList;
         this.mAct = activity;
 
@@ -57,8 +58,8 @@ public class MovieTitleListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         switch (getItemViewType(position)) {
             case 2:
-                ((ViewHolderSmall) holder).getImageView().setImageUrl(mMovieList.get(position).getImage(), AppController.getInstance().getImageLoader());
-                ((ViewHolderSmall) holder).getTitleView().setText(mMovieList.get(position).getTitle());
+                ((ViewHolderSmall) holder).getImageView().setImageUrl(mMovieList.get(position).getImageUrl(), AppController.getInstance().getImageLoader());
+                ((ViewHolderSmall) holder).getTitleView().setText(mMovieList.get(position).getName());
 
                 ((ViewHolderSmall) holder).getImageView().setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -71,8 +72,8 @@ public class MovieTitleListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
                 break;
             case 1:
-                ((ViewHolderLarge) holder).getImageView().setImageUrl(mMovieList.get(position).getImage(), AppController.getInstance().getImageLoader());
-                ((ViewHolderLarge) holder).getTitleView().setText(mMovieList.get(position).getTitle());
+                ((ViewHolderLarge) holder).getImageView().setImageUrl(mMovieList.get(position).getImageUrl(), AppController.getInstance().getImageLoader());
+                ((ViewHolderLarge) holder).getTitleView().setText(mMovieList.get(position).getName());
                 ((ViewHolderLarge) holder).getOverviewView().setText(mMovieList.get(position).getOverview());
                 ((ViewHolderLarge) holder).getImageView().setOnClickListener(new View.OnClickListener() {
                     @Override

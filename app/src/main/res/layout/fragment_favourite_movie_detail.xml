@@ -67,6 +67,7 @@
         android:clickable="true"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|right|end"
-        android:contentDescription="@string/fab_favourite"/>
+        android:contentDescription="@string/fab_favourite"
+        android:focusable="true" />
 </android.support.design.widget.CoordinatorLayout>
 
